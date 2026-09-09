@@ -19,9 +19,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   // Add / remove image paths here — the carousel adapts to however many you put.
   final List<String> _heroImages = const [
-    'assets/images/hero.png',
+    'assets/images/fuelstation.jpg',
     'assets/images/autoshop.jpg',
-    'assets/images/hero.png',
   ];
 
   late final PageController _heroController;
@@ -44,12 +43,12 @@ class _HomePageState extends State<HomePage> {
 
   void _startHeroTimer() {
     _heroTimer?.cancel();
-    _heroTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    _heroTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
       if (!mounted || !_heroController.hasClients) return;
       _currentHeroPage = (_currentHeroPage + 1) % _heroImages.length;
       _heroController.animateToPage(
         _currentHeroPage,
-        duration: const Duration(milliseconds: 1000),
+        duration: const Duration(milliseconds: 10),
         curve: Curves.easeInOut,
       );
     });
@@ -152,7 +151,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.25),
+                        color: Colors.black.withValues(alpha: 0.12),
                         blurRadius: 15,
                         offset: const Offset(0, -3),
                       ),
@@ -261,10 +260,32 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 32),
+                                  const SizedBox(height: 20),
                                 ],
                               ),
                             ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: const [
+                                    SizedBox(height: 6),
+
+                                    Text(
+                                      'Explore Other Services',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
                             // Auto-rotating hero carousel (changes image every 5 seconds).
                             Padding(
                               padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
@@ -276,8 +297,8 @@ class _HomePageState extends State<HomePage> {
                                       color: Colors.black.withValues(
                                         alpha: 0.2,
                                       ),
-                                      blurRadius: 12,
-                                      offset: const Offset(0, 6),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 3),
                                     ),
                                   ],
                                 ),
