@@ -152,39 +152,20 @@ class _HomePageState extends State<HomePage> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.12),
-                        blurRadius: 10,
+                        color: Colors.black.withValues(alpha: 0.25),
+                        blurRadius: 15,
                         offset: const Offset(0, -3),
                       ),
                     ],
                   ),
                   child: Stack(
                     children: [
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: 28,
-                        child: IgnorePointer(
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.black.withValues(alpha: 0.12),
-                                  Colors.transparent,
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
                       SingleChildScrollView(
                         padding: const EdgeInsets.only(bottom: 120),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            const SizedBox(height: 5),
                             Padding(
                               padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                               child: Container(
@@ -206,7 +187,7 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                     const SizedBox(width: 10),
                                     Text(
-                                      'Search Here',
+                                      'What service do you need?',
                                       style: TextStyle(
                                         fontSize: 15,
                                         color: Colors.grey.shade500,
@@ -218,53 +199,6 @@ class _HomePageState extends State<HomePage> {
                             ),
                             const SizedBox(height: 20),
 
-                            // Auto-rotating hero carousel (changes image every 5 seconds).
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withValues(
-                                        alpha: 0.2,
-                                      ),
-                                      blurRadius: 12,
-                                      offset: const Offset(0, 6),
-                                    ),
-                                  ],
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(16),
-                                  child: SizedBox(
-                                    height: 210,
-                                    width: double.infinity,
-                                    child: PageView.builder(
-                                      controller: _heroController,
-                                      itemCount: _heroImages.length,
-                                      onPageChanged: (index) {
-                                        _currentHeroPage = index;
-                                      },
-                                      itemBuilder: (context, index) {
-                                        return Image.asset(
-                                          _heroImages[index],
-                                          fit: BoxFit.cover,
-                                          errorBuilder:
-                                              (context, error, stackTrace) =>
-                                                  Container(
-                                                    color: const Color(
-                                                      0xFFE30613,
-                                                    ),
-                                                  ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 28),
-
                             // Emergency Services section
                             Padding(
                               padding: const EdgeInsets.symmetric(
@@ -273,16 +207,6 @@ class _HomePageState extends State<HomePage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  const Text(
-                                    'Emergency Services',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 20),
-
                                   // Row 1: two bigger cards
                                   Row(
                                     children: [
@@ -341,6 +265,52 @@ class _HomePageState extends State<HomePage> {
                                 ],
                               ),
                             ),
+                            // Auto-rotating hero carousel (changes image every 5 seconds).
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(
+                                        alpha: 0.2,
+                                      ),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 6),
+                                    ),
+                                  ],
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: SizedBox(
+                                    height: 210,
+                                    width: double.infinity,
+                                    child: PageView.builder(
+                                      controller: _heroController,
+                                      itemCount: _heroImages.length,
+                                      onPageChanged: (index) {
+                                        _currentHeroPage = index;
+                                      },
+                                      itemBuilder: (context, index) {
+                                        return Image.asset(
+                                          _heroImages[index],
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  Container(
+                                                    color: const Color(
+                                                      0xFFE30613,
+                                                    ),
+                                                  ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 28),
                           ],
                         ),
                       ),
