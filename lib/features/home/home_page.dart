@@ -8,7 +8,7 @@ class HomePage extends StatefulWidget {
 
   const HomePage({
     super.key,
-    this.userName = 'Kavidu Purnamal',
+    this.userName = 'Driver',
     this.profileImagePath = '',
   });
 

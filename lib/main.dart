@@ -153,8 +153,8 @@ class _LoadingScreenState extends State<_LoadingScreen>
               children: [
                 Image.asset(
                   'assets/images/logo.png',
-                  width: 120,
-                  height: 120,
+                  width: 150,
+                  height: 150,
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stackTrace) => const Icon(
                     Icons.local_shipping,
@@ -162,6 +162,7 @@ class _LoadingScreenState extends State<_LoadingScreen>
                     color: Colors.black87,
                   ),
                 ),
+
                 const SizedBox(height: 24),
                 const Text(
                   'Roadside Assistance',
