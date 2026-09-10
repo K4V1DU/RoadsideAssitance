@@ -21,70 +21,71 @@ class WelcomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          // Top hero image.
-          SizedBox(
-            height: 280,
-            width: double.infinity,
-            child: Image.asset(
-              'assets/images/welcome.png',
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                color: Colors.grey.shade300,
-                child: Icon(
-                  Icons.build_circle_outlined,
-                  size: 80,
-                  color: Colors.grey.shade600,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Top hero image.
+            SizedBox(
+              height: 350,
+              width: double.infinity,
+              child: Image.asset(
+                'assets/images/welcome.png',
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  color: Colors.grey.shade300,
+                  child: Icon(
+                    Icons.build_circle_outlined,
+                    size: 80,
+                    color: Colors.grey.shade600,
+                  ),
                 ),
               ),
             ),
-          ),
-          Expanded(
-            child: Padding(
+            Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 24),
                   Image.asset(
                     'assets/images/logo.png',
-                    height: 56,
+                    height: 72,
                     errorBuilder: (context, error, stackTrace) => const Icon(
                       Icons.local_shipping,
-                      size: 48,
+                      size: 60,
                       color: Colors.black87,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   const Text(
                     'Ceylon Roadside Assistant',
                     style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
                       color: Colors.black87,
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 28),
                   const Text(
                     'Peace of mind behind\nthe wheel',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 26,
+                      fontSize: 32,
                       fontWeight: FontWeight.bold,
-                      height: 1.3,
+                      height: 1.25,
                     ),
                   ),
-                  const Spacer(),
+                  const SizedBox(height: 36),
                   SizedBox(
                     width: double.infinity,
-                    height: 56,
+                    height: 52,
                     child: ElevatedButton(
                       onPressed: () => _goToLogin(context, UserType.driver),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFE30613),
+                        elevation: 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(28),
+                          borderRadius: BorderRadius.circular(26),
                         ),
                       ),
                       child: const Text(
@@ -97,7 +98,7 @@ class WelcomePage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14),
                   GestureDetector(
                     onTap: () =>
                         _goToLogin(context, UserType.assistanceProvider),
@@ -119,8 +120,8 @@ class WelcomePage extends StatelessWidget {
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
