@@ -6,28 +6,34 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../entities/app_user.dart';
 import '../../../cloudinary_service.dart';
-import '../../home/home_page.dart';
+import '../../home/home_page.dart'; // TODO: replace with a real provider home page once it exists.
 
-class CompleteProfilePage extends StatefulWidget {
+class ServiceProviderCompleteProfilePage extends StatefulWidget {
   final String uid;
   final String phoneNumber;
 
-  const CompleteProfilePage({
+  const ServiceProviderCompleteProfilePage({
     super.key,
     required this.uid,
     required this.phoneNumber,
   });
 
   @override
-  State<CompleteProfilePage> createState() => _CompleteProfilePageState();
+  State<ServiceProviderCompleteProfilePage> createState() =>
+      _ServiceProviderCompleteProfilePageState();
 }
 
-class _CompleteProfilePageState extends State<CompleteProfilePage> {
+class _ServiceProviderCompleteProfilePageState
+    extends State<ServiceProviderCompleteProfilePage> {
   final _nameController = TextEditingController();
   final _picker = ImagePicker();
 
   XFile? _pickedImage;
   bool _isLoading = false;
+
+  // Which services this provider offers. Nothing pre-selected;
+  // user must pick at least one before submitting.
+  final Set<ServiceType> _selectedServices = {};
 
   Future<void> _pickImage() async {
     final picked = await _picker.pickImage(
@@ -40,11 +46,30 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
     }
   }
 
+  void _toggleService(ServiceType service) {
+    setState(() {
+      if (_selectedServices.contains(service)) {
+        _selectedServices.remove(service);
+      } else {
+        _selectedServices.add(service);
+      }
+    });
+  }
+
   Future<void> _onSubmit() async {
     if (_nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Please enter your name')));
+      return;
+    }
+
+    if (_selectedServices.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select at least one service you offer'),
+        ),
+      );
       return;
     }
 
@@ -64,28 +89,31 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
       imageUrl = uploadedUrl;
     }
 
-    // This page is driver-only signup, so we construct a Driver directly.
-    // userType, currentLocation, and rating all default sensibly
-    // (userType.driver is set internally; location/rating start empty).
-    final user = Driver(
+    // currentLocation and rating default sensibly (empty location,
+    // zero rating) and can be updated later once the app starts
+    // tracking the provider's live position and reviews.
+    final provider = AssistanceProvider(
       uid: widget.uid,
       phoneNumber: widget.phoneNumber,
       name: _nameController.text.trim(),
       profileImagePath: imageUrl,
+      services: _selectedServices,
     );
 
     await FirebaseFirestore.instance
         .collection('users')
         .doc(widget.uid)
-        .set(user.toMap());
+        .set(provider.toMap());
 
     if (!mounted) return;
 
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
+        // TODO: swap for a real provider home page (e.g.
+        // AssistanceProviderHomePage) once it exists.
         builder: (_) => HomePage(
-          userName: user.name,
-          profileImagePath: user.profileImagePath,
+          userName: provider.name,
+          profileImagePath: provider.profileImagePath,
         ),
       ),
       (route) => false,
@@ -97,6 +125,22 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
     _nameController.dispose();
     super.dispose();
   }
+
+  String _labelFor(ServiceType service) => switch (service) {
+        ServiceType.mechanic => 'Mechanic',
+        ServiceType.towTruck => 'Tow Truck',
+        ServiceType.fuelDelivery => 'Fuel Delivery',
+        ServiceType.flatTireChange => 'Flat Tire Change',
+        ServiceType.batteryBoost => 'Battery Boost',
+      };
+
+  IconData _iconFor(ServiceType service) => switch (service) {
+        ServiceType.mechanic => Icons.build_rounded,
+        ServiceType.towTruck => Icons.local_shipping_rounded,
+        ServiceType.fuelDelivery => Icons.local_gas_station_rounded,
+        ServiceType.flatTireChange => Icons.tire_repair_rounded,
+        ServiceType.batteryBoost => Icons.battery_charging_full_rounded,
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +199,7 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
                 const SizedBox(height: 28),
                 const Center(
                   child: Text(
-                    'Complete Your Profile',
+                    'Complete Your Provider Profile',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
@@ -163,7 +207,7 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
                 const SizedBox(height: 8),
                 Center(
                   child: Text(
-                    'Just a couple more details before you get started',
+                    'Tell us who you are and what services you offer',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                   ),
@@ -185,6 +229,59 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
                       ),
                     ),
                   ),
+                ),
+                const SizedBox(height: 28),
+                const Text(
+                  'Services you offer',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Select all that apply',
+                  style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                ),
+                const SizedBox(height: 14),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: ServiceType.values.map((service) {
+                    final isSelected = _selectedServices.contains(service);
+                    return FilterChip(
+                      selected: isSelected,
+                      onSelected: (_) => _toggleService(service),
+                      showCheckmark: false,
+                      avatar: Icon(
+                        _iconFor(service),
+                        size: 18,
+                        color: isSelected
+                            ? Colors.white
+                            : Colors.grey.shade700,
+                      ),
+                      label: Text(_labelFor(service)),
+                      labelStyle: TextStyle(
+                        color: isSelected ? Colors.white : Colors.black87,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      backgroundColor: Colors.grey.shade100,
+                      selectedColor: const Color(0xFFE30613),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        side: BorderSide(
+                          color: isSelected
+                              ? const Color(0xFFE30613)
+                              : Colors.grey.shade300,
+                        ),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                    );
+                  }).toList(),
                 ),
                 const SizedBox(height: 32),
                 SizedBox(
@@ -217,6 +314,7 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
                           ),
                   ),
                 ),
+                const SizedBox(height: 24),
               ],
             ),
           ),

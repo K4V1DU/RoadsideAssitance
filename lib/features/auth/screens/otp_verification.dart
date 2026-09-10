@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
+import '../../../entities/app_user.dart';
 import '../phone_auth_datasource.dart';
 import '../auth_router_helper.dart';
 
@@ -10,10 +11,15 @@ class OtpVerification extends StatefulWidget {
   final String phoneNumber;
   final PhoneAuthDataSource authDataSource;
 
+  /// The role picked on the Welcome screen, carried through so a
+  /// brand-new account lands on the correct complete-profile page.
+  final UserType intendedRole;
+
   const OtpVerification({
     super.key,
     required this.phoneNumber,
     required this.authDataSource,
+    required this.intendedRole,
   });
 
   @override
@@ -67,6 +73,7 @@ class _OtpVerificationState extends State<OtpVerification> {
           context,
           userCredential.user!.uid,
           widget.phoneNumber,
+          intendedRole: widget.intendedRole,
         );
       },
       onFailed: (message) {
@@ -97,6 +104,7 @@ class _OtpVerificationState extends State<OtpVerification> {
         context,
         userCredential.user!.uid,
         widget.phoneNumber,
+        intendedRole: widget.intendedRole,
       );
     } catch (e) {
       if (!mounted) return;
