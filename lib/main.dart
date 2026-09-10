@@ -4,8 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'entities/app_user.dart';
-import 'features/auth/screens/complete_profile_page.dart';
-import 'features/auth/screens/login_page.dart';
+import 'features/auth/screens/welcome_page.dart';
 import 'features/home/home_page.dart';
 import 'firebase_options.dart';
 
@@ -46,7 +45,7 @@ class AuthGate extends StatelessWidget {
 
         final user = snapshot.data;
         if (user == null) {
-          return const LoginPage();
+          return const WelcomePage();
         }
 
         return _AuthenticatedRoute(uid: user.uid);
@@ -75,29 +74,39 @@ class _AuthenticatedRoute extends StatelessWidget {
 
         final doc = snapshot.data;
         if (doc == null || !doc.exists) {
-          return CompleteProfilePage(
-            uid: uid,
-            phoneNumber: FirebaseAuth.instance.currentUser?.phoneNumber ?? '',
-          );
+          // Signed in with Firebase Auth but never finished the
+          // complete-profile step (e.g. app was closed mid-signup).
+          // There's no intendedRole available here, so send them back
+          // to the Welcome screen to pick a role and go through
+          // complete-profile again.
+          return const WelcomePage();
         }
 
-        final user = AppUser.fromMap(uid, doc.data()!);
+        // userFromMap inspects the stored `userType` and returns either
+        // a Driver or an AssistanceProvider instance.
+        final user = userFromMap(uid, doc.data()!);
         return _buildRoleHome(user);
       },
     );
   }
 
   Widget _buildRoleHome(AppUser user) {
-    switch (user.role) {
-      case UserRole.driver:
+    switch (user.userType) {
+      case UserType.driver:
         return HomePage(
           userName: user.name,
           profileImagePath: user.profileImagePath,
         );
-      case UserRole.mechanic:
+      case UserType.assistanceProvider:
+        // Safe cast: userType.assistanceProvider always maps to an
+        // AssistanceProvider instance from userFromMap.
+        final provider = user as AssistanceProvider;
+        // TODO: replace with your real AssistanceProviderHomePage once it
+        // exists. provider.services / provider.isAvailable are available
+        // here if the home page needs to branch on offered services.
         return Scaffold(
-          appBar: AppBar(title: const Text('Mechanic home')),
-          body: Center(child: Text('Welcome, ${user.name}!')),
+          appBar: AppBar(title: const Text('Assistance provider home')),
+          body: Center(child: Text('Welcome, ${provider.name}!')),
         );
     }
   }
