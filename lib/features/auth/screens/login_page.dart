@@ -89,17 +89,21 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 24),
               Center(
-                child: Image.asset(
-                  'assets/images/logo.png',
-                  height: 100,
-                  errorBuilder: (context, error, stackTrace) => const Icon(
-                    Icons.local_shipping,
-                    size: 80,
-                    color: Colors.black87,
-                  ),
+                child: Column(
+                  children: [
+                    Image.asset(
+                      'assets/images/logo.png',
+                      height: 90,
+                      errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.local_shipping,
+                        size: 80,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 10),
               const Center(
                 child: Text(
                   'Please Enter Your Mobile Number',
@@ -107,12 +111,12 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               Center(
                 child: Text(
                   'We will send you a verification code to this number',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                 ),
               ),
               const SizedBox(height: 24),

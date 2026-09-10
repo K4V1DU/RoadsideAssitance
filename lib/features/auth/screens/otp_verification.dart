@@ -147,14 +147,14 @@ class _OtpVerificationState extends State<OtpVerification> {
               // Logo
               Image.asset(
                 'assets/images/logo.png',
-                height: 110,
+                height: 90,
                 errorBuilder: (context, error, stackTrace) => const Icon(
                   Icons.local_shipping,
                   size: 90,
                   color: Colors.black87,
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 10),
 
               // Title
               const Text(
