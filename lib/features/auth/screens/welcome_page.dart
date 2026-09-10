@@ -53,81 +53,81 @@ class WelcomePage extends StatelessWidget {
                   ),
                 ),
                 child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/images/logo.png',
-                    height: 72,
-                    errorBuilder: (context, error, stackTrace) => const Icon(
-                      Icons.local_shipping,
-                      size: 60,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Ceylon Roadside Assistant',
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 28),
-                  const Text(
-                    'Peace of mind behind\nthe wheel',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      height: 1.25,
-                    ),
-                  ),
-                  const SizedBox(height: 36),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: ElevatedButton(
-                      onPressed: () => _goToLogin(context, UserType.driver),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFE30613),
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(26),
-                        ),
-                      ),
-                      child: const Text(
-                        'Get Started',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/logo.png',
+                      height: 80,
+                      errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.local_shipping,
+                        size: 80,
+                        color: Colors.black87,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 14),
-                  GestureDetector(
-                    onTap: () =>
-                        _goToLogin(context, UserType.assistanceProvider),
-                    child: RichText(
+                    const SizedBox(height: 0),
+                    const Text(
+                      'Ceylon Roadside Assistant',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    const Text(
+                      'Peace of mind behind\nthe wheel',
                       textAlign: TextAlign.center,
-                      text: const TextSpan(
-                        style: TextStyle(fontSize: 14, color: Colors.black87),
-                        children: [
-                          TextSpan(text: 'Want to earn? '),
-                          TextSpan(
-                            text: 'Register as a Assistant',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        height: 1.25,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                ],
+                    const SizedBox(height: 60),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton(
+                        onPressed: () => _goToLogin(context, UserType.driver),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFE30613),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(26),
+                          ),
+                        ),
+                        child: const Text(
+                          'Get Started',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    GestureDetector(
+                      onTap: () =>
+                          _goToLogin(context, UserType.assistanceProvider),
+                      child: RichText(
+                        textAlign: TextAlign.center,
+                        text: const TextSpan(
+                          style: TextStyle(fontSize: 14, color: Colors.black87),
+                          children: [
+                            TextSpan(text: 'Want to earn? '),
+                            TextSpan(
+                              text: 'Register as a Assistant',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                ),
               ),
-            ),
             ),
           ],
         ),
