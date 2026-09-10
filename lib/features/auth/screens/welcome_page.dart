@@ -41,12 +41,20 @@ class WelcomePage extends StatelessWidget {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
+            Transform.translate(
+              offset: const Offset(0, -20),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(32),
+                  ),
+                ),
+                child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 24),
                   Image.asset(
                     'assets/images/logo.png',
                     height: 72,
@@ -119,6 +127,7 @@ class WelcomePage extends StatelessWidget {
                   const SizedBox(height: 24),
                 ],
               ),
+            ),
             ),
           ],
         ),
