@@ -66,7 +66,7 @@ class WelcomePage extends StatelessWidget {
                     ),
                     const SizedBox(height: 0),
                     const Text(
-                      'Ceylon Roadside Assistant',
+                      'Roadside Assistant',
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w700,
