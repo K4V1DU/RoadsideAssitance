@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'entities/app_user.dart';
 import 'features/auth/screens/welcome_page.dart';
 import 'features/home/home_page.dart';
+import 'features/home/assistance_provider_home_page.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -98,15 +99,9 @@ class _AuthenticatedRoute extends StatelessWidget {
           profileImagePath: user.profileImagePath,
         );
       case UserType.assistanceProvider:
-        // Safe cast: userType.assistanceProvider always maps to an
-        // AssistanceProvider instance from userFromMap.
-        final provider = user as AssistanceProvider;
-        // TODO: replace with your real AssistanceProviderHomePage once it
-        // exists. provider.services / provider.isAvailable are available
-        // here if the home page needs to branch on offered services.
-        return Scaffold(
-          appBar: AppBar(title: const Text('Assistance provider home')),
-          body: Center(child: Text('Welcome, ${provider.name}!')),
+        return AssistanceProviderHomePage(
+          userName: user.name,
+          profileImagePath: user.profileImagePath,
         );
     }
   }
