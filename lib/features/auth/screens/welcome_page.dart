@@ -118,7 +118,10 @@ class WelcomePage extends StatelessWidget {
                             TextSpan(text: 'Want to earn? '),
                             TextSpan(
                               text: 'Register as a Assistant',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 246, 1, 1),
+                              ),
                             ),
                           ],
                         ),
