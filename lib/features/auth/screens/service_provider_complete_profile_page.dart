@@ -238,14 +238,9 @@ class _ServiceProviderCompleteProfilePageState
       duration: const Duration(milliseconds: 180),
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: isSelected
-            ? const Color(0xFFE30613).withValues(alpha: 0.05)
-            : Colors.white,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isSelected ? const Color(0xFFE30613) : Colors.grey.shade300,
-          width: isSelected ? 1.6 : 1,
-        ),
+        border: Border.all(color: Colors.grey.shade300, width: 1),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -270,9 +265,7 @@ class _ServiceProviderCompleteProfilePageState
                     height: 44,
                     child: ColorFiltered(
                       colorFilter: ColorFilter.mode(
-                        isSelected
-                            ? const Color(0xFFE30613)
-                            : Colors.grey.shade600,
+                        Colors.grey.shade600,
                         BlendMode.srcIn,
                       ),
                       child: Image.asset(
@@ -281,9 +274,7 @@ class _ServiceProviderCompleteProfilePageState
                         errorBuilder: (context, error, stackTrace) => Icon(
                           Icons.build_rounded,
                           size: 30,
-                          color: isSelected
-                              ? const Color(0xFFE30613)
-                              : Colors.grey.shade600,
+                          color: Colors.grey.shade600,
                         ),
                       ),
                     ),
@@ -295,12 +286,10 @@ class _ServiceProviderCompleteProfilePageState
                       children: [
                         Text(
                           info.label,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
-                            color: isSelected
-                                ? const Color(0xFFE30613)
-                                : Colors.black87,
+                            color: Colors.black87,
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -315,19 +304,15 @@ class _ServiceProviderCompleteProfilePageState
                     ),
                   ),
                   const SizedBox(width: 8),
-                  // Selection indicator.
+                  // Selection indicator — filled black when selected.
                   Container(
                     width: 24,
                     height: 24,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: isSelected
-                          ? const Color(0xFFE30613)
-                          : Colors.transparent,
+                      color: isSelected ? Colors.black : Colors.transparent,
                       border: Border.all(
-                        color: isSelected
-                            ? const Color(0xFFE30613)
-                            : Colors.grey.shade400,
+                        color: isSelected ? Colors.black : Colors.grey.shade400,
                         width: 1.6,
                       ),
                     ),
