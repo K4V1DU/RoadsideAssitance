@@ -8,6 +8,94 @@ import '../../../entities/app_user.dart';
 import '../../../cloudinary_service.dart';
 import '../../home/home_page.dart'; // TODO: replace with a real provider home page once it exists.
 
+/// Static content describing what a service actually involves, so a
+/// provider can make an informed choice before selecting it. Edit the
+/// copy here — this is the single source of truth for service details
+/// shown during provider onboarding.
+class _ServiceInfo {
+  final String label;
+  final String summary;
+  final String description;
+  final List<String> requirements;
+  final String iconAsset;
+
+  const _ServiceInfo({
+    required this.label,
+    required this.summary,
+    required this.description,
+    required this.requirements,
+    required this.iconAsset,
+  });
+}
+
+const Map<ServiceType, _ServiceInfo> _serviceInfo = {
+  ServiceType.mechanic: _ServiceInfo(
+    label: 'Mechanic',
+    summary: 'On-site diagnosis and minor repairs',
+    description:
+        'Diagnose the issue at the customer\'s location and carry out minor '
+        'repairs that get the vehicle running again, without needing a full '
+        'workshop visit.',
+    requirements: [
+      'Basic mechanic tool kit',
+      'Experience with common vehicle faults',
+      'Valid ID for verification',
+    ],
+    iconAsset: 'assets/images/icon-mechanic.png',
+  ),
+  ServiceType.towTruck: _ServiceInfo(
+    label: 'Tow Truck',
+    summary: 'Transport a non-drivable vehicle',
+    description:
+        'Recover a vehicle that cannot be driven and transport it to a '
+        'garage, home, or other safe location using a tow vehicle or flatbed.',
+    requirements: [
+      'Registered tow vehicle or flatbed',
+      'Valid driving license for the vehicle class',
+      'Towing straps / winch equipment',
+    ],
+    iconAsset: 'assets/images/icon-towtruck.png',
+  ),
+  ServiceType.fuelDelivery: _ServiceInfo(
+    label: 'Fuel Delivery',
+    summary: 'Deliver fuel to a stranded vehicle',
+    description:
+        'Bring a small, safe quantity of fuel directly to a customer who has '
+        'run out, so they can get to the nearest fuel station.',
+    requirements: [
+      'Approved fuel container',
+      'Safe fuel handling practice',
+      'Own transport to reach the customer',
+    ],
+    iconAsset: 'assets/images/icon-jerrycan.png',
+  ),
+  ServiceType.flatTireChange: _ServiceInfo(
+    label: 'Flat Tire Change',
+    summary: 'Replace a flat tire with the spare',
+    description:
+        'Safely jack up the vehicle and swap a flat tire for the customer\'s '
+        'spare, so they can continue their journey or reach a tire shop.',
+    requirements: [
+      'Jack and lug wrench',
+      'Basic tire-changing tools',
+      'Reflective safety gear',
+    ],
+    iconAsset: 'assets/images/icon-flattire.png',
+  ),
+  ServiceType.batteryBoost: _ServiceInfo(
+    label: 'Battery Boost',
+    summary: 'Jump-start a dead battery',
+    description:
+        'Use jumper cables or a portable jump-starter to get a vehicle with '
+        'a dead battery running again on the spot.',
+    requirements: [
+      'Jumper cables or portable jump-starter',
+      'Basic understanding of vehicle electrics',
+    ],
+    iconAsset: 'assets/images/icon-battery.png',
+  ),
+};
+
 class ServiceProviderCompleteProfilePage extends StatefulWidget {
   final String uid;
   final String phoneNumber;
@@ -35,6 +123,11 @@ class _ServiceProviderCompleteProfilePageState
   // user must pick at least one before submitting.
   final Set<ServiceType> _selectedServices = {};
 
+  // Which service cards are currently expanded to show full details.
+  // Independent of selection — a provider can read details without
+  // opting in, and select without reading details.
+  final Set<ServiceType> _expandedServices = {};
+
   Future<void> _pickImage() async {
     final picked = await _picker.pickImage(
       source: ImageSource.gallery,
@@ -52,6 +145,16 @@ class _ServiceProviderCompleteProfilePageState
         _selectedServices.remove(service);
       } else {
         _selectedServices.add(service);
+      }
+    });
+  }
+
+  void _toggleExpanded(ServiceType service) {
+    setState(() {
+      if (_expandedServices.contains(service)) {
+        _expandedServices.remove(service);
+      } else {
+        _expandedServices.add(service);
       }
     });
   }
@@ -126,21 +229,188 @@ class _ServiceProviderCompleteProfilePageState
     super.dispose();
   }
 
-  String _labelFor(ServiceType service) => switch (service) {
-        ServiceType.mechanic => 'Mechanic',
-        ServiceType.towTruck => 'Tow Truck',
-        ServiceType.fuelDelivery => 'Fuel Delivery',
-        ServiceType.flatTireChange => 'Flat Tire Change',
-        ServiceType.batteryBoost => 'Battery Boost',
-      };
+  Widget _buildServiceCard(ServiceType service) {
+    final info = _serviceInfo[service]!;
+    final isSelected = _selectedServices.contains(service);
+    final isExpanded = _expandedServices.contains(service);
 
-  IconData _iconFor(ServiceType service) => switch (service) {
-        ServiceType.mechanic => Icons.build_rounded,
-        ServiceType.towTruck => Icons.local_shipping_rounded,
-        ServiceType.fuelDelivery => Icons.local_gas_station_rounded,
-        ServiceType.flatTireChange => Icons.tire_repair_rounded,
-        ServiceType.batteryBoost => Icons.battery_charging_full_rounded,
-      };
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade300, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Main row: icon, name/summary, selection check, expand chevron.
+          InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () => _toggleService(service),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 44,
+                    height: 44,
+                    child: ColorFiltered(
+                      colorFilter: ColorFilter.mode(
+                        Colors.grey.shade600,
+                        BlendMode.srcIn,
+                      ),
+                      child: Image.asset(
+                        info.iconAsset,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) => Icon(
+                          Icons.build_rounded,
+                          size: 30,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          info.label,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          info.summary,
+                          style: TextStyle(
+                            fontSize: 12.5,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  // Selection indicator — filled black when selected.
+                  Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isSelected ? Colors.black : Colors.transparent,
+                      border: Border.all(
+                        color: isSelected ? Colors.black : Colors.grey.shade400,
+                        width: 1.6,
+                      ),
+                    ),
+                    child: isSelected
+                        ? const Icon(
+                            Icons.check_rounded,
+                            size: 16,
+                            color: Colors.white,
+                          )
+                        : null,
+                  ),
+                  const SizedBox(width: 4),
+                  // Expand/collapse "learn more" — separate tap target
+                  // from the selection tap above.
+                  InkWell(
+                    borderRadius: BorderRadius.circular(20),
+                    onTap: () => _toggleExpanded(service),
+                    child: Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: AnimatedRotation(
+                        duration: const Duration(milliseconds: 180),
+                        turns: isExpanded ? 0.5 : 0,
+                        child: Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          size: 22,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          AnimatedCrossFade(
+            duration: const Duration(milliseconds: 180),
+            crossFadeState: isExpanded
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond,
+            firstChild: Padding(
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Divider(height: 1),
+                  const SizedBox(height: 12),
+                  Text(
+                    info.description,
+                    style: TextStyle(
+                      fontSize: 13,
+                      height: 1.4,
+                      color: Colors.grey.shade800,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'What you\'ll need',
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  ...info.requirements.map(
+                    (req) => Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.check_circle_outline_rounded,
+                            size: 15,
+                            color: Colors.grey.shade500,
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              req,
+                              style: TextStyle(
+                                fontSize: 12.5,
+                                color: Colors.grey.shade700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            secondChild: const SizedBox(width: double.infinity),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +469,7 @@ class _ServiceProviderCompleteProfilePageState
                 const SizedBox(height: 28),
                 const Center(
                   child: Text(
-                    'Complete Your Provider Profile',
+                    'Complete Your Profile',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
@@ -216,7 +486,7 @@ class _ServiceProviderCompleteProfilePageState
                 TextField(
                   controller: _nameController,
                   decoration: InputDecoration(
-                    labelText: 'Full Name',
+                    labelText: 'Enter Your Full Name',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(color: Colors.black),
@@ -230,7 +500,7 @@ class _ServiceProviderCompleteProfilePageState
                     ),
                   ),
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: 40),
                 const Text(
                   'Services you offer',
                   style: TextStyle(
@@ -241,49 +511,13 @@ class _ServiceProviderCompleteProfilePageState
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Select all that apply',
+                  'Tap a card to select it. Tap the arrow to see what\'s '
+                  'involved and what you\'ll need.',
                   style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
                 ),
-                const SizedBox(height: 14),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: ServiceType.values.map((service) {
-                    final isSelected = _selectedServices.contains(service);
-                    return FilterChip(
-                      selected: isSelected,
-                      onSelected: (_) => _toggleService(service),
-                      showCheckmark: false,
-                      avatar: Icon(
-                        _iconFor(service),
-                        size: 18,
-                        color: isSelected
-                            ? Colors.white
-                            : Colors.grey.shade700,
-                      ),
-                      label: Text(_labelFor(service)),
-                      labelStyle: TextStyle(
-                        color: isSelected ? Colors.white : Colors.black87,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      backgroundColor: Colors.grey.shade100,
-                      selectedColor: const Color(0xFFE30613),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        side: BorderSide(
-                          color: isSelected
-                              ? const Color(0xFFE30613)
-                              : Colors.grey.shade300,
-                        ),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
-                    );
-                  }).toList(),
-                ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 16),
+                ...ServiceType.values.map(_buildServiceCard),
+                const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
                   height: 56,
