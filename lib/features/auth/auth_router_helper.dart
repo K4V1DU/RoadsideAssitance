@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../entities/app_user.dart';
 import '../home/home_page.dart';
+import '../home/assistance_provider_home_page.dart';
 import 'screens/complete_profile_page.dart';
 import 'screens/service_provider_complete_profile_page.dart';
 
@@ -70,15 +71,10 @@ void _goToRoleHome(BuildContext context, AppUser user) {
       );
       break;
     case UserType.assistanceProvider:
-      // Safe cast: userType.assistanceProvider always maps to an
-      // AssistanceProvider instance from userFromMap.
       final provider = user as AssistanceProvider;
-      // TODO: replace with your real AssistanceProviderHomePage once it
-      // exists. provider.services / provider.isAvailable are available
-      // here if the home page needs to branch on offered services.
-      destination = Scaffold(
-        appBar: AppBar(title: const Text('Assistance provider home')),
-        body: Center(child: Text('Welcome, ${provider.name}!')),
+      destination = AssistanceProviderHomePage(
+        userName: provider.name,
+        profileImagePath: provider.profileImagePath,
       );
       break;
   }
