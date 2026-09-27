@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../entities/app_user.dart';
 import '../home/home_page.dart';
-import '../home/assistance_provider_home_page.dart';
+import '../home/provider_dashboard_page.dart';
 import 'screens/complete_profile_page.dart';
 import 'screens/service_provider_complete_profile_page.dart';
 
@@ -73,10 +73,15 @@ void _goToRoleHome(BuildContext context, AppUser user) {
       break;
     case UserType.assistanceProvider:
       final provider = user as AssistanceProvider;
-      destination = AssistanceProviderHomePage(
+      destination = ProviderDashboardPage(
         userType: user.userType,
         userName: provider.name,
         profileImagePath: provider.profileImagePath,
+        locationLabel: provider.currentLocation.latitude == 0 &&
+                provider.currentLocation.longitude == 0
+            ? 'Current location'
+            : '${provider.currentLocation.latitude.toStringAsFixed(4)}, '
+                '${provider.currentLocation.longitude.toStringAsFixed(4)}',
       );
       break;
   }

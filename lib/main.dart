@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'entities/app_user.dart';
 import 'features/auth/screens/welcome_page.dart';
 import 'features/home/home_page.dart';
-import 'features/home/assistance_provider_home_page.dart';
+import 'features/home/provider_dashboard_page.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -100,12 +100,21 @@ class _AuthenticatedRoute extends StatelessWidget {
           profileImagePath: user.profileImagePath,
         );
       case UserType.assistanceProvider:
-        return AssistanceProviderHomePage(
+        final provider = user as AssistanceProvider;
+        return ProviderDashboardPage(
           userType: user.userType,
-          userName: user.name,
-          profileImagePath: user.profileImagePath,
+          userName: provider.name,
+          profileImagePath: provider.profileImagePath,
+          locationLabel: _locationLabel(provider.currentLocation),
         );
     }
+  }
+
+  String _locationLabel(GeoLocation location) {
+    if (location.latitude == 0 && location.longitude == 0) {
+      return 'Current location';
+    }
+    return '${location.latitude.toStringAsFixed(4)}, ${location.longitude.toStringAsFixed(4)}';
   }
 }
 
