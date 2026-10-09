@@ -8,6 +8,7 @@ import 'package:latlong2/latlong.dart';
 
 import '../../entities/app_user.dart';
 import '../_share/navbar/app_bottom_nav_bar.dart';
+import '../nearby_centers/nearby_gas_stations_page.dart';
 import '../nearby_centers/service_centers_near_location_page.dart';
 import '../profile/profile_page.dart';
 import '../request_service/service_location_page.dart';
@@ -86,9 +87,20 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  /// Carousel tap: get the phone's GPS location (fallback: Colombo)
-  /// and open the nearby service centers list.
+  /// Carousel tap: the visible image decides where to go.
+  /// fuelstation.jpg -> gas stations map, autoshop.jpg -> service centers.
   Future<void> _openNearbyCenters() async {
+    final tapped = _heroImages[_currentHeroPage];
+
+    if (tapped.contains('fuelstation')) {
+      if (!mounted) return;
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const NearbyGasStationsPage()),
+      );
+      return;
+    }
+
+    // autoshop -> service centers list
     LatLng location = const LatLng(6.9271, 79.8612); // Colombo fallback
     String address = '';
 
@@ -394,8 +406,9 @@ class _HomePageState extends State<HomePage> {
                                           label: 'Vehicle Tow',
                                           imagePath: 'assets/images/towing.png',
                                           height: 110,
-                                          onTap: () =>
-                                              _openService(ServiceType.towTruck),
+                                          onTap: () => _openService(
+                                            ServiceType.towTruck,
+                                          ),
                                         ),
                                       ),
                                       const SizedBox(width: 14),
@@ -405,8 +418,9 @@ class _HomePageState extends State<HomePage> {
                                           imagePath:
                                               'assets/images/mechanic.png',
                                           height: 110,
-                                          onTap: () =>
-                                              _openService(ServiceType.mechanic),
+                                          onTap: () => _openService(
+                                            ServiceType.mechanic,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -479,7 +493,8 @@ class _HomePageState extends State<HomePage> {
                             ),
                             const SizedBox(height: 20),
 
-                            // Auto-rotating carousel (tap -> nearby service centers)
+                            // Auto-rotating carousel
+                            // (fuel image -> gas stations, auto shop -> service centers)
                             Padding(
                               padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                               child: Container(
