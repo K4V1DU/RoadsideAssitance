@@ -1,12 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../entities/service_center.dart';
-import 'service_center_details_page.dart';
 import 'service_center_receipt_page.dart';
-
 
 class ServiceCentersNearLocationPage extends StatelessWidget {
   final LatLng location;
@@ -21,76 +20,24 @@ class ServiceCentersNearLocationPage extends StatelessWidget {
   static const Color _red = Color(0xFFE30613);
   static const Color _green = Color(0xFF1E9E4A);
 
-  // Sample data (4 centres). Replace names/phones/coordinates with real ones.
-  static const List<ServiceCenter> _centers = [
-    ServiceCenter(
-      id: 'sc1',
-      name: 'Malabe Auto Care',
-      phone: '0112345601',
-      address: 'Kaduwela Road, Malabe',
-      latitude: 6.9071,
-      longitude: 79.9650,
-      fullServicePrice: 12500,
-      rating: 4.6,
-      reviewCount: 128,
-      openHour: 8,
-      closeHour: 18,
-    ),
-    ServiceCenter(
-      id: 'sc2',
-      name: 'Speedway Service Station',
-      phone: '0112345602',
-      address: 'New Kandy Road, Malabe',
-      latitude: 6.9140,
-      longitude: 79.9720,
-      fullServicePrice: 14800,
-      rating: 4.3,
-      reviewCount: 86,
-      openHour: 7,
-      closeHour: 20,
-    ),
-    ServiceCenter(
-      id: 'sc3',
-      name: 'Pro Motors Garage',
-      phone: '0112345603',
-      address: 'Athurugiriya Road, Malabe',
-      latitude: 6.8990,
-      longitude: 79.9580,
-      fullServicePrice: 11200,
-      rating: 4.0,
-      reviewCount: 54,
-      openHour: 9,
-      closeHour: 17,
-    ),
-    ServiceCenter(
-      id: 'sc4',
-      name: 'City 24H Auto Service',
-      phone: '0112345604',
-      address: 'Battaramulla Road, Thalahena',
-      latitude: 6.9200,
-      longitude: 79.9500,
-      fullServicePrice: 16500,
-      rating: 4.8,
-      reviewCount: 203,
-      openHour: 0,
-      closeHour: 24,
-    ),
-  ];
-
-  List<ServiceCenter> _sorted() {
-    final list = _centers
-        .map(
-          (c) => c.copyWith(
-            distanceKm: Geolocator.distanceBetween(
-                  location.latitude,
-                  location.longitude,
-                  c.latitude,
-                  c.longitude,
-                ) /
-                1000,
-          ),
-        )
-        .toList();
+  List<ServiceCenter> _parse(QuerySnapshot<Map<String, dynamic>> snap) {
+    final list = <ServiceCenter>[];
+    for (final doc in snap.docs) {
+      try {
+        final c = ServiceCenter.fromMap(doc.id, doc.data());
+        if (c.name.isEmpty) continue;
+        final km = Geolocator.distanceBetween(
+              location.latitude,
+              location.longitude,
+              c.latitude,
+              c.longitude,
+            ) /
+            1000;
+        list.add(c.copyWith(distanceKm: km));
+      } catch (_) {
+        // skip documents with wrong field types
+      }
+    }
     list.sort((a, b) => a.distanceKm.compareTo(b.distanceKm));
     return list;
   }
@@ -101,8 +48,6 @@ class ServiceCentersNearLocationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final centers = _sorted();
-
     return Scaffold(
       backgroundColor: const Color(0xFFF6F6F6),
       appBar: AppBar(
@@ -136,13 +81,39 @@ class ServiceCentersNearLocationPage extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: centers.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 12),
-              itemBuilder: (context, i) {
-                final c = centers[i];
-                return _card(context, c);
+            child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+              stream: FirebaseFirestore.instance
+                  .collection('service_centers')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Text(
+                        'Unable to load service centers.\n${snapshot.error}',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  );
+                }
+                if (!snapshot.hasData) {
+                  return const Center(
+                    child: CircularProgressIndicator(color: _red),
+                  );
+                }
+                final centers = _parse(snapshot.data!);
+                if (centers.isEmpty) {
+                  return const Center(
+                    child: Text('No service centers registered yet.'),
+                  );
+                }
+                return ListView.separated(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: centers.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 12),
+                  itemBuilder: (context, i) => _card(context, centers[i]),
+                );
               },
             ),
           ),
@@ -162,16 +133,16 @@ class ServiceCentersNearLocationPage extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
-  Navigator.of(context).push(
-    MaterialPageRoute(
-      builder: (_) => ServiceCenterReceiptPage(
-        center: c,
-        userLocation: location,
-        userAddress: address,
-      ),
-    ),
-  );
-},
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => ServiceCenterReceiptPage(
+                center: c,
+                userLocation: location,
+                userAddress: address,
+              ),
+            ),
+          );
+        },
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Column(
@@ -219,7 +190,6 @@ class ServiceCentersNearLocationPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  // Open / Closed badge
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 10,
